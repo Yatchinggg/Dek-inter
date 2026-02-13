@@ -1,61 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Team Logic - Thai Consonant Drill</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            background-color: #f4f4f4;
-        }
+<meta charset="UTF-8">
+<title>Team Logic - Thai Consonant Drill</title>
 
-        h1 {
-            margin-top: 20px;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f2f5;
+}
 
-        #gameArea {
-            margin-top: 30px;
-        }
+h1 {
+    margin-top: 20px;
+}
 
-        button {
-            font-size: 20px;
-            margin: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-        }
+#hearts {
+    font-size: 28px;
+    color: red;
+    margin: 10px;
+}
 
-        #hearts {
-            font-size: 25px;
-            color: red;
-        }
+#question {
+    font-size: 26px;
+    margin: 20px;
+}
 
-        #question {
-            font-size: 30px;
-            margin: 20px;
-        }
+button {
+    font-size: 22px;
+    padding: 10px 15px;
+    margin: 8px;
+    cursor: pointer;
+}
 
-        #result {
-            font-size: 20px;
-            margin-top: 15px;
-        }
-    </style>
+#result {
+    margin-top: 15px;
+    font-size: 20px;
+}
+</style>
 </head>
+
 <body>
 
 <h1>Team Logic - Thai Consonant Drill</h1>
 
 <div id="hearts">❤️❤️❤️</div>
-
-<div id="gameArea">
-    <div id="question">Press Start</div>
-    <div id="options"></div>
-    <div id="result"></div>
-    <button onclick="startGame()">Start</button>
-</div>
+<div id="question">Press Start</div>
+<div id="options"></div>
+<div id="result"></div>
+<button onclick="startGame()">Start</button>
 
 <script>
 
+// 44 Thai consonants
 const consonants = [
 {char:"ก", name:"ko kai"},
 {char:"ข", name:"kho khai"},
@@ -104,7 +101,21 @@ const consonants = [
 ];
 
 let hearts = 3;
-let current;
+let current = null;
+
+// 随机函数
+function getRandomItem(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+// 打乱数组（Fisher-Yates）
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
 
 function startGame() {
     hearts = 3;
@@ -118,31 +129,43 @@ function updateHearts() {
 
 function nextQuestion() {
     document.getElementById("result").innerText = "";
-    current = consonants[Math.floor(Math.random()*consonants.length)];
+
+    current = getRandomItem(consonants);
     document.getElementById("question").innerText = current.name;
 
+    let options = [];
+
+    // 添加正确答案
+    options.push(current);
+
+    // 添加3个随机错误答案
+    while (options.length < 4) {
+        let random = getRandomItem(consonants);
+        if (!options.includes(random)) {
+            options.push(random);
+        }
+    }
+
+    // 真正随机打乱
+    shuffle(options);
+
+    // 显示按钮
     let optionsDiv = document.getElementById("options");
     optionsDiv.innerHTML = "";
 
-    let shuffled = consonants.sort(()=>0.5-Math.random()).slice(0,4);
-
-    if (!shuffled.includes(current)) {
-        shuffled[0] = current;
-    }
-
-    shuffled.forEach(item => {
+    options.forEach(item => {
         let btn = document.createElement("button");
         btn.innerText = item.char;
-        btn.onclick = function() { checkAnswer(item); };
+        btn.onclick = () => checkAnswer(item);
         optionsDiv.appendChild(btn);
     });
 }
 
 function checkAnswer(selected) {
-    if (selected.char === current.char) {
-        document.getElementById("result").innerText = 
+    if (selected === current) {
+        document.getElementById("result").innerText =
             "Correct! " + current.char + " = " + current.name;
-        nextQuestion();
+        setTimeout(nextQuestion, 800);
     } else {
         hearts--;
         updateHearts();
