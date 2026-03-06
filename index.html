@@ -55,6 +55,31 @@ button {
 
 <script>
 
+async function startQuiz() {
+
+    const nickname = document.getElementById("nickname").value;
+
+    const response = await fetch(
+    "https://yatchinggg.github.io/Dek-inter/",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nickname: nickname
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("user").innerText =
+        nickname + " (" + data.counter + ")";
+}
+
+</script>
+
 // 44 Thai consonants
 const consonants = [
 {char:"ก", name:"ko kai"},
