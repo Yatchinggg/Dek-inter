@@ -1,0 +1,31 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update
+from . import models, database
+
+app = FastAPI()
+
+class StartRequest(BaseModel):
+    nickname: str
+
+@app.on_event("startup")
+async def startup():
+    await database.init_db()
+
+@app.post("/start")
+async def start_quiz(req: StartRequest):
+    async with database.AsyncSessionLocal() as session:  # type: AsyncSession
+        # look up nickname
+        result = await session.execute(
+            select(models.NicknameCount).where(models.NicknameCount.nickname == req.nickname)
+        )
+        record = result.scalar_one_or_none()
+        if record:
+            record.count += 1
+            session.add(record)
+        else:
+            record = models.NicknameCount(nickname=req.nickname, count=1)
+            session.add(record)
+        await session.commit()
+        return {"nickname": record.nickname, "count": record.count}
