@@ -55,7 +55,7 @@ button {
 
 <script>
 
-async function startQuiz() {
+sync function startQuiz() {
 
     const nickname = document.getElementById("nickname").value;
 
@@ -75,7 +75,8 @@ async function startQuiz() {
     const data = await response.json();
 
     document.getElementById("user").innerText =
-        nickname + " (" + data.counter + ")";
+        nickname + " (" + data.counter + ")"
+        startGame(); 
 }
 
 
