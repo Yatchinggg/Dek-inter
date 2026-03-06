@@ -45,9 +45,12 @@ button {
 <h1>Team Logic - Thai Consonant Drill</h1>
 
 <div id="hearts">❤️❤️❤️</div>
+<div id="nickname-display" style="font-size:24px; font-weight:bold; margin-top:10px;"></div>
 <div id="question">Press Start</div>
 <div id="options"></div>
 <div id="result"></div>
+<!-- nickname input field -->
+<input type="text" id="nickname" placeholder="Enter nickname" style="font-size:20px;padding:8px;" />
 <button onclick="startGame()">Start</button>
 
 <script>
@@ -120,6 +123,9 @@ function shuffle(array) {
 function startGame() {
     hearts = 3;
     updateHearts();
+    // show nickname if provided
+    const nick = document.getElementById('nickname').value.trim();
+    document.getElementById('nickname-display').innerText = nick ? `Player: ${nick}` : '';
     nextQuestion();
 }
 
