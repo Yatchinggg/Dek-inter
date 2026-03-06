@@ -1,8 +1,8 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
-from . import models, database
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+import models
+import database
 
 app = FastAPI()
 
