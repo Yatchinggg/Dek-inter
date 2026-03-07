@@ -1,40 +1,45 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 from pydantic import BaseModel
 from sqlalchemy import select
-
-from . import models
-from . import database
+from . import database, models
 
 app = FastAPI()
 
+
 class StartRequest(BaseModel):
     nickname: str
+
 
 @app.on_event("startup")
 async def startup():
     await database.init_db()
 
+
 @app.post("/start")
 async def start_quiz(req: StartRequest):
-    async with database.AsyncSessionLocal() as session:  # type: AsyncSession
-        # look up nickname
+
+    async with database.AsyncSessionLocal() as session:
+
         result = await session.execute(
-            select(models.NicknameCount).where(models.NicknameCount.nickname == req.nickname)
+            select(models.NicknameCount).where(
+                models.NicknameCount.nickname == req.nickname
+            )
         )
+
         record = result.scalar_one_or_none()
+
         if record:
             record.count += 1
-            session.add(record)
         else:
-            record = models.NicknameCount(nickname=req.nickname, count=1)
+            record = models.NicknameCount(
+                nickname=req.nickname,
+                count=1
+            )
             session.add(record)
+
         await session.commit()
-        return {"nickname": record.nickname, "count": record.count}
+
+        return {
+            "nickname": record.nickname,
+            "count": record.count
+        }
