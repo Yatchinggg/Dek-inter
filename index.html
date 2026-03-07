@@ -59,25 +59,33 @@ async function startQuiz() {
 
     const nickname = document.getElementById("nickname").value;
 
-    const response = await fetch(
-        "https://dek-inter2.onrender.com/start",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nickname: nickname
-            })
-        }
-    );
+    try {
 
-    const data = await response.json();
+        const response = await fetch(
+            "https://dek-inter2.onrender.com/start",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nickname: nickname
+                })
+            }
+        );
 
-    document.getElementById("nickname-display").innerText =
-        nickname + " (" + data.count + ")";
+        const data = await response.json();
 
-    startGame();
+        document.getElementById("nickname-display").innerText =
+            nickname + " (" + data.count + ")";
+
+        startGame();
+
+    } catch (error) {
+        console.error("API error:", error);
+        document.getElementById("result").innerText =
+            "Server error. Check console.";
+    }
 }
 
 
